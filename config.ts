@@ -1,0 +1,1 @@
+export const ownerAddress = "0xfb19ed19363744d562d544270f194434393d28eb"; 
