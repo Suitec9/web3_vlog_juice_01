@@ -2,14 +2,12 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import {  ethers } from 'ethers';
-//import { create } from 'ipfs-http-client';
-
-import { CONTRACT_ADDRESS, vlog_abi } from '@/constant';
-//import { options } from './api/ipfs';
+import { CONTRACT_ADDRESS, abi_ } from '@/constant';
 import ipfsClient from './api/ipfs_00';
-//import pinFileToIPFS from './api/pinFile';
-import { uploadFile } from '@/utils/HandleFileUpload';
+//import { uploadFile } from '@/utils/HandleFileUpload';
 import fetchABI from '@/utils/fetchABI';
+import  {PostFiles, savePostToIpfs}  from '@/utils/handleFile';
+//import fetchABI from '@/utils/fetchABI';
 
 
 //const client = create(options);
@@ -47,12 +45,25 @@ function CreatePost({title, content }: PostState) {
     setPost((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
   }
 
-  async function createNewPost() {
+  async function handleNewPost() {
     if (!title || !content) return;
    try {
-    const hash = await savePostToIpfs();
+    const coverImageInput = fileRef.current;
+    if (!coverImageInput) {
+      alert("Please select a cover image");
+      return;
+    }
+    const coverImage = coverImageInput.files?.[0] ?? null;
+    const postData: PostFiles = {
+      title: '',
+      content: '',
+      coverImage,
+    };
+
+   // const postData = {title, content, coverImage: fileRef.toString() }
+    const hash = await savePostToIpfs(postData);
     //setLoading(true);
-    await savePost(hash);
+    await savePost(title, hash.toString());
     console.log(savePost, "*****Flat earth cult****")
     router.push('/');
    } catch (err) {
@@ -61,31 +72,22 @@ function CreatePost({title, content }: PostState) {
    }
   }
 
-  async function savePostToIpfs() {
-    try {
-      const added  = await ipfsClient.add(JSON.stringify(post));
-      console.log(added, "**& This sould be ADDED!!!***");
-      return added.toString();
-    } catch (err) {
-      console.error('Error saving post to IPFS: ', err);
-      throw new Error('Failed to save post to IPFS')
-    }
-  }
-
-  async function savePost(hash: string) {
+  async function savePost(title: string, hash: string) {
     if (!window.ethereum) {
       console.error("Metamask is not installed or enabled");
       throw new Error('Metamask is not installed or enabled');
     }
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
+        console.log("No debate just antacipate:", provider);
         const signer = provider.getSigner();
+        console.log(signer, "**Power up***");
 
-        //const abi = fetchABI()
-        const contract = new ethers.Contract(CONTRACT_ADDRESS, vlog_abi, signer);
+        const abi = await fetchABI()
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
         console.log('contract: ', contract);
 
-        const tx = await contract.createPost(post.title, hash);
+        const tx = await contract.createPost(title, hash);
         console.log('transact: ', tx);
         //setLoaded(true);
         tx.wait()
@@ -94,8 +96,7 @@ function CreatePost({title, content }: PostState) {
       } catch (err) {
         console.error('Error creating post: ', err);
         throw new Error("Failed to create post");
-      }
-    
+      } 
   }
 
   function triggerOnChange() {
@@ -105,7 +106,8 @@ function CreatePost({title, content }: PostState) {
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const uploadedFile = e.target.files?.[0];
     if (!uploadedFile) return;
-    const added = await uploadFile(uploadedFile, {useLocalNode: false});
+    //const added = await uploadFile(uploadedFile, {useLocalNode: false});
+    const  added  = await ipfsClient.add(uploadedFile);
     setPost((state) => ({ ...state, coverImage: added.toString()}));
     setImage(uploadedFile);
   }
@@ -138,7 +140,7 @@ function CreatePost({title, content }: PostState) {
           <button
             className="mr-4 rounded-lg bg-gray-100 px-16 py-4 text-lg shadow-md hover:bg-gray-200"
             type="button"
-            onClick={createNewPost}
+            onClick={handleNewPost}
           >
             Publish
           </button>

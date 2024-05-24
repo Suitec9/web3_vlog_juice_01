@@ -9,6 +9,7 @@ import {
 } from "../generated/VlogJuice/VlogJuice"
 import {
   JuicedReceived,
+  Post,
   PostCreated,
   PostUpdated,
   RevokedCreatorRole,
@@ -16,6 +17,8 @@ import {
   RoleGranted,
   RoleRevoked
 } from "../generated/schema"
+
+import { ipfs, json } from "@graphprotocol/graph-ts"
 
 export function handleJuicedReceived(event: JuicedReceivedEvent): void {
   let entity = new JuicedReceived(
@@ -44,6 +47,22 @@ export function handlePostCreated(event: PostCreatedEvent): void {
   entity.transactionHash = event.transaction.hash
 
   entity.save()
+
+  let post = new Post(event.params.postId.toString());
+  post.title = event.params.title;
+  post.contentHash = event.params.hash;
+  let data = ipfs.cat(event.params.hash);
+  if (data) {
+    let value = json.fromBytes(data).toObject()
+    if (value) {
+      const content = value.get("content")
+      if (content) {
+        post.postContent = content.toString()
+      }
+    }
+  }
+  post.createdAtTimestamp = event.block.timestamp;
+  post.save()
 }
 
 export function handlePostUpdated(event: PostUpdatedEvent): void {
@@ -60,6 +79,25 @@ export function handlePostUpdated(event: PostUpdatedEvent): void {
   entity.transactionHash = event.transaction.hash
 
   entity.save()
+
+  let post = Post.load(event.params.postId.toString());
+  if (post) {
+    post.title = event.params.title;
+    post.contentHash = event.params.hash;
+    post.published = event.params.published;
+    let data = ipfs.cat(event.params.hash);
+    if (data) {
+      let value = json.fromBytes(data).toObject()
+      if (value) {
+        const content = value.get('content')
+        if (content) {
+          post.postContent = content.toString()
+        }
+      }
+    }
+    post.updatedAtTimestamp = event.block.timestamp;
+    post.save()
+  }
 }
 
 export function handleRevokedCreatorRole(event: RevokedCreatorRoleEvent): void {

@@ -7,7 +7,7 @@ const nextConfig = {
         headers: [
           {
             key: "Access-Control-Allow-Origin",
-            value: "https://api.pinata.cloud/psa",
+            value: "https://api.pinata.cloud/pinning/pinFileToIPFS",
           },
           {
             key: "Access-Control-Allow-Methods",

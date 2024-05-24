@@ -18,36 +18,37 @@ interface MyAppProps extends AppProps {
 }
 
 function MyApp({ Component, pageProps }: MyAppProps) {
- // const [accounts, setAccounts] = useState<[]>()
-  const [account, setAccount] = useState<string | null>(null);
+ //const [accounts, setAccounts] = useState<[]>();
 
-  async function getWeb3Modal() {
+ const [account, setAccount] = useState<string | null>(null);
+ async function getWeb3Modal() {
     const web3Modal = new Web3Modal({
       cacheProvider: false,
       providerOptions: {
         walletconnect: {
           package: WalletConnectProvider,
           options: {
-            quiknode: process.env.QUIKNODE_HTTP_URL,
+            rpc: {
+              1: process.env.QUIKNODE_HTTP_URL,
+            },
           },
         },
       },
     });
     return web3Modal;
   }
- // const provider = new ethers.providers.Web3Provider(window.ethereum)
-
- async function connect() {
+  //const provider = new ethers.providers.Web3Provider(window.ethereum) 
+  async function connect() {
     try {
       const web3Modal = await getWeb3Modal();
       const connection = await web3Modal.connect();
       const provider = new ethers.providers.Web3Provider(connection);
       const accounts = await provider.listAccounts();
-      setAccount(accounts[0] );
+      setAccount(accounts[0]);
     } catch (err) {
-      console.log('error:', err);
+      console.error('Error connecting to wallet:', err);
     }
-  } 
+  }
 
   return (
     <div>
@@ -86,6 +87,10 @@ function MyApp({ Component, pageProps }: MyAppProps) {
           
             <Link legacyBehavior  href="/create-post" >
               <a className=" border-spacing-0 rounded-lg text-lg font-medium">Create Post</a>
+            </Link>
+
+            <Link legacyBehavior href={"/juice-mode/page"}>
+              <a className=" border-spacing-5 rounded-lg ml-8 text-lg font-blod">Upload Video</a>
             </Link>
           
         </div>

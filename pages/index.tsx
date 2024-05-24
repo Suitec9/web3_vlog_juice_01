@@ -4,8 +4,9 @@ import { ethers } from 'ethers';
 import Link from 'next/link';
 import { AccountContext } from '../context/context';
 import {  ownerAddress } from '@/config';
-import { CONTRACT_ADDRESS, vlog_abi } from '@/constant';
+import { CONTRACT_ADDRESS, abi_ } from '@/constant';
 import { RiArrowRightWideLine } from "react-icons/ri";
+import VideoUploader from './juice-mode/page';
 //import { stringify } from 'querystring';
 
 interface props {
@@ -20,6 +21,7 @@ export default function Home({posts}:props) {
   async function navigate() {
     console.log("***$$$WHAT OR WHERE$$$$***YOU AT?", navigate())
     router.push('/create-post');
+    //router.push('/juice-mode')
   }
 
   return (
@@ -31,7 +33,7 @@ export default function Home({posts}:props) {
               <div className="mt-5 flex items-center justify-between rounded-lg border border-gray-300 p-5">
                 <p className="m-0 cursor-pointer font-bold text-2xl">{post[1]}</p>
                 <div className="flex justify-end pr-5">
-                  <img src="/right-arrow.svg" alt="Right arrow" className="w-6" />
+                <RiArrowRightWideLine />
                 </div>
               </div>
               </a>
@@ -43,7 +45,6 @@ export default function Home({posts}:props) {
          <button className="mt-24 flex items-center rounded-lg bg-gray-100 px-16 py-4 text-3xl shadow-md hover:bg-gray-200"
          onClick={navigate}
         >Create your first post<span className="ml-6">
-         <RiArrowRightWideLine />
         </span>
       </button>
 
@@ -64,7 +65,7 @@ export async function getServerSideProps() {
     provider = new ethers.providers.JsonRpcProvider('https://polygon-mainnet.infura.io');
   }
 
-  const contract = new ethers.Contract(CONTRACT_ADDRESS, vlog_abi, provider);
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, abi_, provider);
   const data = await contract.fetchAllPost();
   console.log("***LEVEL UP***:", data);
   return {

@@ -1,4 +1,6 @@
-export const vlog_abi = [
+export const CONTRACT_ADDRESS = "0x8FA206f7e3e9a7Ca5dEf374923f95bC1D78D144f";
+
+export const abi_ = [
   {
     "inputs": [
       {
@@ -856,5 +858,4 @@ export const vlog_abi = [
   }
 ];
 
-export const CONTRACT_ADDRESS = "0x8FA206f7e3e9a7Ca5dEf374923f95bC1D78D144f";
 

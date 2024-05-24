@@ -4,9 +4,10 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { ethers } from 'ethers';
 import { AccountContext } from '../../context/context';
-import { contractAddress, ownerAddress } from '@/config.mjs';
-import { VlogJuiceABI } from '@/constant';
+import {  ownerAddress } from '@/config';
+import { CONTRACT_ADDRESS } from '@/constant';
 import { CID } from 'multiformats/cid';
+import fetchABI from '@/utils/fetchABI';
 
 const ipfsURI = 'https://ipfs.io/ipfs/';
 
@@ -17,7 +18,6 @@ interface PostProps {
     coverImage?: string;
   };
 }
-
 
 export default function Post({ post }: PostProps) {
   const account = useContext(AccountContext);
@@ -61,9 +61,11 @@ export async function getStaticPaths() {
   } else {
     provider = new ethers.providers.JsonRpcProvider('https://polygon-rpc.com/');
   }
+  const abi = await fetchABI();
 
-  const contract = new ethers.Contract(contractAddress, VlogJuiceABI, provider);
-  const data = await contract.fetchPosts();
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
+  const data = await contract.fetchAllPost();
+  console.log("****data**IS A fetch Function a view function**:", data); 
 
   const paths = data.map((d: CID[]) => ({ params: { id: d[2] } }));
 
