@@ -1,4 +1,7 @@
-import { NextResponse } from 'next/server';
+/*import uploadToIPFS from "@/pages/api/helia-remote";
+import ipfsClient from "../pages/api/ipfs_00";
+import pinFileToIPFS from "@/pages/api/pinFile";
+import useIPFSUpload from "@/pages/api/helia-remote";
 
 export interface Post {
   title: string;
@@ -10,45 +13,25 @@ interface UploadOptions {
   useLocalNode: boolean;
 }
 
-const uploapPost = async (post: Post, options: UploadOptions) => {
+const uploadFile = async (post: Post, options: UploadOptions) => {
+  const uploadToIPFS  = useIPFSUpload()
   try {
-    // Add the post content to IPFS using Pinata
-    const formData = new FormData();
-    formData.append('file', new Blob([JSON.stringify(post)], { type: 'application/json' }));
-    formData.append('pinataMetadata', JSON.stringify({ name: 'Post Content' }));
-    const contentResponse = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.PINATA_API_KEY}`,
-      },
-      body: formData,
-    });
-    const { IpfsHash: contentCID } = await contentResponse.json();
+    // Add the post content to IPFS
+    
+    const contentCID = await uploadToIPFS(post);
     console.log('Added post content:', contentCID);
 
-    // Add the images to IPFS using Pinata
-    const imageCIDs = await Promise.all(
-      post.images.map(async (image) => {
-        const formData = new FormData();
-        formData.append('file', image);
-        formData.append('pinataMetadata', JSON.stringify({ name: image.name }));
-        const imageResponse = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${process.env.PINATA_API_KEY}`,
-          },
-          body: formData,
-        });
-        const { IpfsHash: imageCID } = await imageResponse.json();
-        return imageCID;
-      })
-    );
+    // Add the images to IPFS
+    const imageCIDs = await Promise.all(post.images.map(async (image) => {
+      const  cid  = await ipfsClient.add(image);
+      return cid.toString();
+    }));
     console.log('Added post images:', imageCIDs);
 
     // Create a metadata object with the post details
     const metadata = {
       title: post.title,
-      content: contentCID,
+      content: contentCID.toString(),
       images: imageCIDs,
     };
 
@@ -56,27 +39,23 @@ const uploapPost = async (post: Post, options: UploadOptions) => {
       return metadata;
     }
 
-    // Upload the post to the server using the /api/files endpoint
-    const response = await fetch('/api/files', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(metadata),
-    });
+    // Pin the post metadata to Pinata
+    const pinningResponse = await pinFileToIPFS(new File([JSON.stringify(metadata)], 'post.json'));
+    console.log("Pinning post:", pinningResponse);
 
-    if (!response.ok) {
-      throw new Error(`HTTP error ${response.status}`);
-    }
-
-    const { IpfsHash } = await response.json();
-    return { IpfsHash };
+    return metadata;
   } catch (error) {
-    console.error('Error uploading file to IPFS:', error);
+    console.error('Error uploading post:', error);
+    alert('Failed uploading post');
     throw error;
   }
 };
-export default uploapPost
 
+const renderPost = (metadata: { title: string; content: string; images: string[] }) => {
+  // Render the post using the metadata
+  console.log('Post title:', metadata.title);
+  console.log('Post content:', metadata.content);
+  console.log('Post images:', metadata.images);
+};
 
-
+export { uploadFile, renderPost };*/

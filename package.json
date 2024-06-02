@@ -9,18 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ayanworks/polygon-did-registrar": "^0.0.15",
+    "@ayanworks/polygon-did-resolver": "^0.0.15",
     "@pinata/sdk": "^2.1.0",
+    "@web3modal/ethers5": "^4.2.2",
+    "did-resolver": "^4.1.0",
     "dotenv": "^16.4.5",
-    "next": "^14.2.3",
-    "react": "^18",
-    "react-dom": "^18"
+    "next": "^14.2.3"
   },
   "devDependencies": {
-    "@helia/strings": "^3.0.4",
+    "@ethersproject/networks": "^5.7.1",
     "@types/cors": "^2.8.17",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/video-react": "^0.15.8",
     "@walletconnect/web3-provider": "^1.8.0",
     "buffer": "^6.0.3",
     "eslint": "^8",
@@ -31,6 +34,7 @@
     "postcss": "^8",
     "react-icons": "^5.2.1",
     "react-markdown": "^9.0.1",
+    "react-player": "^2.16.0",
     "react-simplemde-editor": "^5.2.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5",

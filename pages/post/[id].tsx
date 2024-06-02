@@ -5,9 +5,10 @@ import Link from 'next/link';
 import { ethers } from 'ethers';
 import { AccountContext } from '../../context/context';
 import {  ownerAddress } from '@/config';
-import { CONTRACT_ADDRESS } from '@/constant';
-import { CID } from 'multiformats/cid';
-import fetchABI from '@/utils/fetchABI';
+import { CONTRACT_ADDRESS, abi } from '@/constant';
+//import { CID } from 'multiformats/cid';
+import { Networkish } from '@ethersproject/networks/lib/types';
+//import fetchABI from '@/utils/fetchABI';
 
 const ipfsURI = 'https://ipfs.io/ipfs/';
 
@@ -53,21 +54,26 @@ export default function Post({ post }: PostProps) {
 }
 
 export async function getStaticPaths() {
+  const newtorks: Networkish = {
+    name: "polygon-amoy",
+    chainId: 80002
+   }
+   const amoyRpc = 'https://polygon-amoy.drpc.org'
   let provider;
   if (process.env.ENVIRONMENT === 'local') {
     provider = new ethers.providers.JsonRpcProvider();
   } else if (process.env.ENVIRONMENT === 'testnet') {
-    provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.matic.today');
+    provider = new ethers.providers.JsonRpcProvider(amoyRpc, newtorks);
   } else {
     provider = new ethers.providers.JsonRpcProvider('https://polygon-rpc.com/');
   }
-  const abi = await fetchABI();
+ // const abi = await fetchABI();
 
   const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
   const data = await contract.fetchAllPost();
   console.log("****data**IS A fetch Function a view function**:", data); 
 
-  const paths = data.map((d: CID[]) => ({ params: { id: d[2] } }));
+  const paths = data.map((d:any) => ({ params: { id: d[2] } }));
 
   return {
     paths,

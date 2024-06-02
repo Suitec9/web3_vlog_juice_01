@@ -1,13 +1,19 @@
+"use client"
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import {  ethers } from 'ethers';
-import { CONTRACT_ADDRESS, abi_ } from '@/constant';
-import ipfsClient from './api/ipfs_00';
+import { CONTRACT_ADDRESS, abi } from '@/constant';
+
 //import { uploadFile } from '@/utils/HandleFileUpload';
+
 import fetchABI from '@/utils/fetchABI';
-import  {PostFiles, savePostToIpfs}  from '@/utils/handleFile';
-//import fetchABI from '@/utils/fetchABI';
+import pinFileToIPFS from './api/pinFile';
+
+//import ipfsClient from './api/ipfs_00';
+
+import createPostOnChain from '@/utils/config/handlePost';
+import { testnetConfig } from '@/utils/config/networkConfig';
 
 
 //const client = create(options);
@@ -17,7 +23,7 @@ const SimpleMDE = dynamic(() => import('react-simplemde-editor'), {
   ssr: false,
 });
 
-interface PostState {
+export interface PostState {
   title: string;
   content: string;
   coverImage?: string | null;
@@ -26,9 +32,11 @@ interface PostState {
 const initialState: PostState = { title: '', content: '' };
 
 function CreatePost({title, content }: PostState) {
+  //const uploadToIPFS  = useIPFSUpload()
   const [post, setPost] = useState<PostState>(initialState);
   const [image, setImage] = useState<File | null>(null);
   const [loaded, setLoaded] = useState<boolean>(false);
+  const [ hash, setHash ] = useState('')
 //  const [ loading, setLoading ] = useState<boolean>(false);
 
   const fileRef = useRef<HTMLInputElement>(null);
@@ -46,33 +54,48 @@ function CreatePost({title, content }: PostState) {
   }
 
   async function handleNewPost() {
-    if (!title || !content) return;
+    if (!title || !content ) {;
+    
    try {
-    const coverImageInput = fileRef.current;
-    if (!coverImageInput) {
-      alert("Please select a cover image");
-      return;
-    }
-    const coverImage = coverImageInput.files?.[0] ?? null;
-    const postData: PostFiles = {
-      title: '',
-      content: '',
-      coverImage,
-    };
-
    // const postData = {title, content, coverImage: fileRef.toString() }
-    const hash = await savePostToIpfs(postData);
-    //setLoading(true);
-    await savePost(title, hash.toString());
+    const hash = await savePostToIpfs()
+    if (hash) {
+    await savePost(hash);
     console.log(savePost, "*****Flat earth cult****")
+    } else { console.error('Hash is undefined')}
+    //setLoading(true);
+   
     router.push('/');
    } catch (err) {
     console.error("Error creating new post:", err);
     throw new Error('Failed to create post');
-   }
+   } 
+  } else {
+    const hash = await pinFileToIPFS(new File([JSON.stringify(post, null, 2)], 'type'));
+    await createPostOnChain(post.title, hash);
+  }
+  }
+  const doCreateNewPost = async () => {
+    
+    await handleNewPost();
+
+    await createPostOnChain(post.title, hash);
+    setHash("")
+  }  
+  async function savePostToIpfs() {
+    try {
+      //const added  = await (await ipfsClient()).add(JSON.stringify(post));
+     // const added = await ((await ipfsClient()).add(JSON.stringify(post)))
+      const added = await pinFileToIPFS(new File([JSON.stringify(post, null, 2)], 'type'))
+     // console.log(cid,"looking good");
+      console.log(added, "**& This sould be ADDED!!!***")
+      return added.toString();
+    } catch (err) {
+      console.log('error: ', err);
+    }
   }
 
-  async function savePost(title: string, hash: string) {
+  async function savePost(hash: string) {
     if (!window.ethereum) {
       console.error("Metamask is not installed or enabled");
       throw new Error('Metamask is not installed or enabled');
@@ -83,11 +106,11 @@ function CreatePost({title, content }: PostState) {
         const signer = provider.getSigner();
         console.log(signer, "**Power up***");
 
-        const abi = await fetchABI()
-        const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
+        const abi_ = await fetchABI()
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, abi_, signer);
         console.log('contract: ', contract);
 
-        const tx = await contract.createPost(title, hash);
+        const tx = await contract.createPost(post.title, hash);
         console.log('transact: ', tx);
         //setLoaded(true);
         tx.wait()
@@ -95,7 +118,7 @@ function CreatePost({title, content }: PostState) {
         console.log("Post created successfully")
       } catch (err) {
         console.error('Error creating post: ', err);
-        throw new Error("Failed to create post");
+      //  throw new Error("Failed to create post");
       } 
   }
 
@@ -107,7 +130,9 @@ function CreatePost({title, content }: PostState) {
     const uploadedFile = e.target.files?.[0];
     if (!uploadedFile) return;
     //const added = await uploadFile(uploadedFile, {useLocalNode: false});
-    const  added  = await ipfsClient.add(uploadedFile);
+    const  added = await pinFileToIPFS(uploadedFile);
+    //const added = await ( await ipfsClient()).add(uploadedFile);
+    //await pinFileToIPFS(uploadedFile);
     setPost((state) => ({ ...state, coverImage: added.toString()}));
     setImage(uploadedFile);
   }
@@ -140,10 +165,11 @@ function CreatePost({title, content }: PostState) {
           <button
             className="mr-4 rounded-lg bg-gray-100 px-16 py-4 text-lg shadow-md hover:bg-gray-200"
             type="button"
-            onClick={handleNewPost}
+            onClick={doCreateNewPost}
           >
             Publish
           </button>
+         {/* <button type='button' onClick={handleNewPost}>TEST-Button</button>*/}
           <button
             onClick={triggerOnChange}
             className="rounded-lg bg-gray-100 px-16 py-4 text-lg shadow-md hover:bg-gray-200"

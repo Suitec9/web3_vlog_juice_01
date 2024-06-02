@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   await corsMiddle(req, res);
 
   try {
-    const response = await fetch("/api/pinFile.ts", {
+    const response = await fetch("/api/pinFile", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.TOKEN}`,

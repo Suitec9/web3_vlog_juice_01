@@ -1,4 +1,5 @@
-import  uploadPost  from './HandleFileUpload';
+import pinFileToIPFS from '@/pages/api/pinFile';
+//mport  {uploadFile}  from './HandleFileUpload';
 
 export interface PostFiles {
   title: string;
@@ -12,11 +13,11 @@ export async function savePostToIpfs(post: PostFiles) {
     if (!coverImage) {
       throw new Error("No cover image provided");
     }
-    const metadata = await uploadPost({
+    const metadata = await pinFileToIPFS({
       title,
       content,
       images: [coverImage],
-    }, { useLocalNode: false });
+    });//, { useLocalNode: true });
 
     console.log('Post uploaded to IPFS:', metadata);
     return metadata;

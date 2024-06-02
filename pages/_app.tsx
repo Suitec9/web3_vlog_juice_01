@@ -43,8 +43,8 @@ function MyApp({ Component, pageProps }: MyAppProps) {
       const web3Modal = await getWeb3Modal();
       const connection = await web3Modal.connect();
       const provider = new ethers.providers.Web3Provider(connection);
-      const accounts = await provider.listAccounts();
-      setAccount(accounts[0]);
+      const account = await provider.listAccounts();
+      setAccount(account[0]);
     } catch (err) {
       console.error('Error connecting to wallet:', err);
     }
@@ -61,7 +61,10 @@ function MyApp({ Component, pageProps }: MyAppProps) {
           </Link>
           <Link href="/" passHref legacyBehavior>
             <a className="flex justify-between items-center w-full">
-              <h2 className="font-semibold">Vlog_JUice_01</h2>
+              <div className='flex items-center'>
+                <img src='/logoII.png' alt='Logo' className='h-12 mr-2'/>
+                <h2 className="font-semibold">Vlog</h2>
+              </div>
                  <div className="flex flex-col items-start">
                 <p className="text-purple-500">WEB3</p>
                <p className="text-gray-900">Block-Magik</p>
@@ -81,15 +84,15 @@ function MyApp({ Component, pageProps }: MyAppProps) {
           {account && <p className="text-sm">{account}</p>}
         </div>
         <div className="bg-gray-100 px-12 py-6">
-          <Link href="/"  legacyBehavior>
+          <Link href="/" rel='prefetch' legacyBehavior>
             <a className="border-spacing-0 rounded-lg mr-8 text-lg font-medium">Home</a>
           </Link>
           
-            <Link legacyBehavior  href="/create-post" >
+            <Link rel='prefetch' legacyBehavior  href="/create-post" >
               <a className=" border-spacing-0 rounded-lg text-lg font-medium">Create Post</a>
             </Link>
 
-            <Link legacyBehavior href={"/juice-mode/page"}>
+            <Link rel='prefetch' legacyBehavior href={"/juice-mode/page"}>
               <a className=" border-spacing-5 rounded-lg ml-8 text-lg font-blod">Upload Video</a>
             </Link>
           

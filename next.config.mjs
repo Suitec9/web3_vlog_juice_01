@@ -1,3 +1,5 @@
+import { config } from 'process';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async headers() {
@@ -20,7 +22,15 @@ const nextConfig = {
         ]
       }
     ]
-  }
+  },
+  webpack: (config, options) => {
+    config.resolve.fallback = {
+      net: false,
+    };
+    return config
+  },
+  
+  crossOrigin: 'anonymous',
 };
 
 export default nextConfig;

@@ -4,10 +4,12 @@ import { FormatTypes } from "ethers/lib/utils";
 
 const contractAddress = CONTRACT_ADDRESS;
 
+const quiknode_http = process.env.QUIKNODE_HTTP_URL
+
 async function fetchABI(): Promise<ethers.ContractInterface> {
     try {
         // Create an Ethers.js provider instance
-        const provider = new ethers.providers.JsonRpcProvider(process.env.QUIKNODE_HTTP_URL);
+        const provider = new ethers.providers.JsonRpcProvider(quiknode_http);
 
         // Fetch the contract code
         const code = await provider.getCode(contractAddress);

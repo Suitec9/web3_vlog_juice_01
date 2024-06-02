@@ -5,18 +5,19 @@ import dynamic from 'next/dynamic';
 import { ethers } from 'ethers';
 //import { create } from 'ipfs-http-client';
 
-import { CONTRACT_ADDRESS } from '@/constant';
+import { CONTRACT_ADDRESS, abi_ } from '@/constant';
 //import { VlogJuiceABI } from '@/constant';
 ;
 import fetchABI from '@/utils/fetchABI';
+import pinFileToIPFS from '../api/pinFile';
 //import  options  from '../api/pinFile';
-import ipfsClient from '../api/ipfs_00';
+//import ipfsClient from '../api/ipfs_00';
 
 const ipfsURI = 'https://ipfs.io/ipfs/';
 
-const client = ipfsClient;
+//const client = ;
 
-const abi = await fetchABI()
+//const abi = await fetchABI()
 
 const SimpleMDE = dynamic(
   () => import('react-simplemde-editor'),
@@ -52,7 +53,7 @@ export default function Post() {
       provider = new ethers.providers.JsonRpcProvider('https://polygon-rpc.com/');
     }
     
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, abi_, provider);
     const val = await contract.fetchPost(id);
     const postId = val[0].toNumber();
 
@@ -69,7 +70,7 @@ export default function Post() {
 
   async function savePostToIpfs() {
     try {
-      const added = await client.add(JSON.stringify(post));
+      const added = await pinFileToIPFS(JSON.stringify(post));
       return added.toString();
     } catch (err) {
       console.log('error: ', err);
@@ -80,7 +81,7 @@ export default function Post() {
     const hash = await savePostToIpfs();
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, abi_, signer);
     await contract.updatePost(post?.id, post?.title, hash, true);
     router.push('/');
   }
