@@ -11,11 +11,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const { operation, privateKey, url } = body;
 
                 if (operation ===  "create") {
+                    console.log("NeuruSync: OPERATION CREATE",operation);
 
                     const result = await createDID("polygon-mainnet | polygon-amoy-testnet", privateKey);
                     res.status(200).json(result);
+                    console.log(result, "Profit of a thought: RESULT")
                 } else if (operation === "register") {
                     const { did } = body;
+                    console.log(did, "AI really rock");
                     const txHash = await registerDID(did, privateKey, url);
                     res.status(200).json({ txHash });
                 } else {

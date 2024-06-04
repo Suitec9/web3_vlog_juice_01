@@ -67,7 +67,7 @@ function MyApp({ Component, pageProps }: MyAppProps) {
               </div>
                  <div className="flex flex-col items-start">
                 <p className="text-purple-500">WEB3</p>
-               <p className="text-gray-900">Block-Magik</p>
+               <p className="text-gray-600">Block-Magik</p>
               </div>
             </a>
           </Link>

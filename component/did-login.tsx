@@ -17,13 +17,14 @@ function Login() {
         setIsSendingTx('creatingDID');
         try {
             // Create a new DID if the user doesn't have one
-            const createResonse = await fetch("/api/did", {
+            const createResonse = await fetch("/api/did",{
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ operation: "create"}),
+              //  body: JSON.stringify({ operation: "create"}),
             });
+            console.log(createResonse, "Digging deep");
             if (createResonse.ok) {
                 // Check the response content-type
                 const contentType = createResonse.headers.get('Content-Type');

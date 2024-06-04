@@ -1,5 +1,5 @@
 //import { CONTRACT_ADDRESS, abi } from "@/constant";
-import { CONTRACT_ADDRESS_JUICE, acceptAbi_} from "@/constant/abi"
+import { CONTRACT_ADDRESS, CONTRACT_ADDRESS_JUICE, ChainLinkABI, acceptAbi_} from "@/constant/abi"
 import { ethers, utils } from "ethers";
 // import fetchABI from "../fetchABI";
 const gasLimit = 500000;
@@ -54,7 +54,7 @@ export const juiceFuji = async (cid: string) => {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
 
-      //  const contractCrossChain = new ethers.Contract(CROSS_CHAIN_ADDR, crossCahin_ABI, signer);
+        const contractCrossChain = new ethers.Contract(CONTRACT_ADDRESS, ChainLinkABI, signer);
         const checkBalance = ethers.utils.parseEther("0.0001808");
         const balance = await provider.getBalance(await signer.getAddress());
         if(balance.lt(checkBalance)) {

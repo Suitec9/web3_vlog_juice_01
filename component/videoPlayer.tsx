@@ -13,7 +13,7 @@ const VideoPlayer =  ({cid}: videoPlayerProps) => {
     const [ isDarkMode, setIsDarkMode ] = useState<boolean>(false)
     const [isMobile, setIsMobile] = useState<boolean>(false);
     const [ posterSrc, setPosterSrc ] = useState<string | null>(null)
-    const hardcodedCID = "QmP8BmPuiSGB9mcoZRvXUXTsnXS5bLQgpEdXjeCi5i6Re5"
+    const hardcodedCID = "QmP8BmPuiSGB9mcoZRvXUXTsnXS5bLQgpEdXjeCi5i6Re5"//"QmP8BmPuiSGB9mcoZRvXUXTsnXS5bLQgpEdXjeCi5i6Re5";
 
     useEffect(() => {
         // Check if the user's preferred color scheme is dark
@@ -38,7 +38,7 @@ const VideoPlayer =  ({cid}: videoPlayerProps) => {
       }
 
       const fetchIPFScontent = async (cid: string) => {
-        return "https://www.youtube.com/watch?v=mUPKMj-23fs" //`https://ipfs.io/ipfs/${cid}`;
+        return `https://ipfs.io/ipfs/${cid}`;//"https://www.youtube.com/watch?v=mUPKMj-23fs" //`https://ipfs.io/ipfs/${cid}`;
       }
 
     if (!videoSrc) {
