@@ -25,7 +25,7 @@ const VideoPlayer =  ({cid}: videoPlayerProps) => {
         setIsMobile(isMobileDevice);
         // Load the video and poster from IPFS
         const loadedContent = async () => {
-            const videoUrl = await fetchIPFScontent('video-cid');
+            const videoUrl = await fetchIPFScontent(cid);
             const posterUrl = await fetchIPFScontent('poster-cid');
             setPosterSrc(posterUrl);
             setVideoSrc(videoUrl)
