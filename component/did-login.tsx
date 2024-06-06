@@ -5,7 +5,6 @@ import LoadingDID from './LoadingDID';
 import { FaUserCircle } from 'react-icons/fa';
 
 
-
 function Login() {
 
     const [ userDID, setUserDID ] = useState<string | null>(null);
@@ -53,6 +52,7 @@ function Login() {
 
             setUserDID(DID);
         } catch (error) {
+            setIsSendingTx('errorDID')
             console.error('Login error:', error);
         }
         setIsCreatingDID(false)
