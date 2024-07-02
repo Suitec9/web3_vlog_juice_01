@@ -4,9 +4,9 @@
 
 #### It's a video uploader that I built participating in the chainlink Block-Magic Hackaton
 
-*** You can run the following commands `git clone https://github.com/Suitec9/web3_vlog_juice_01` then </br>
+***You can run the following commands `git clone https://github.com/Suitec9/web3_vlog_juice_01` then </br>
 
-`npm ci` or `npm install`to to see it work, since I haven't deployed the frontend `npm run dev` it should be run on the localhost:3000 
+`npm ci` or `npm install`to to see it work, since I haven't deployed the frontend `npm run dev` it should be run on the localhost:3000***
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
